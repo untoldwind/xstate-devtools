@@ -59,7 +59,7 @@ export const StateChartAction: React.SFC<StateChartActionProps> = ({
 }) => {
   switch (action.type) {
     case actionTypes.assign:
-      return typeof action.assignment === 'function' ? (
+      return typeof action.assignment !== 'object' ? (
         <StyledStateChartAction {...dataAttrs} title="assign">
           <strong>assign</strong>
         </StyledStateChartAction>
