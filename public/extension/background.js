@@ -56,6 +56,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   const { type } = message;
   // eslint-disable-next-line default-case
   switch (type) {
+    case 'reset': {
+      delete tabs[tabId];
+      return;
+    }
     case 'connect': {
       const { serviceId, machine, state } = message.payload;
       const events = [];
@@ -115,25 +119,4 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 chrome.tabs.onRemoved.addListener(tabId => {
   delete inspectedWindowTabs[tabId];
   delete tabs[tabId];
-});
-
-chrome.tabs.onUpdated.addListener((tabId, { status }) => {
-  if (status === 'loading') {
-    delete tabs[tabId];
-    if (tabId in inspectedWindowTabs) {
-      const panelPort = inspectedWindowTabs[tabId];
-      panelPort.postMessage({
-        type: 'pageStartedLoading'
-      });
-    }
-  } else if (status === 'complete') {
-    if (tabId in inspectedWindowTabs) {
-      const panelPort = inspectedWindowTabs[tabId];
-      panelPort.postMessage({
-        type: 'pageFinishedLoading'
-      });
-      panelPort.disconnect();
-      delete inspectedWindowTabs[tabId];
-    }
-  }
 });

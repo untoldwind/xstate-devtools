@@ -1,3 +1,5 @@
+const extensionId = "lnhmmdhbigihnomjdmmjchkeehonpdbb";
+
 // listening to messages from `xstate` package
 window.addEventListener('message', msg => {
   const { type } = msg.data;
@@ -16,3 +18,5 @@ window.addEventListener('message', msg => {
     }
   }
 });
+chrome.runtime.sendMessage({ type: "reset" });
+
