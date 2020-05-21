@@ -26,7 +26,7 @@ const renderDevTools = () => {
   }
 };
 
-const init = () => {
+const init = (initialized) => {
   const tabId = chrome.devtools.inspectedWindow.tabId.toString();
   backgroundPort = chrome.runtime.connect({ name: tabId });
   backgroundPort.onMessage.addListener(message => {
@@ -35,7 +35,7 @@ const init = () => {
       switch (type) {
         case 'pageFinishedLoading': {
           isPageLoading = false;
-          init();
+          init(true);
           return;
         }
       }
@@ -96,11 +96,14 @@ const init = () => {
         }
         case 'pageStartedLoading': {
           isPageLoading = true;
-          ReactDOM.unmountComponentAtNode(document.getElementById('root'));
-          ReactDOM.render(
-            <h2 style={{ textAlign: 'center' }}>Resetting...</h2>,
-            document.getElementById('root')
-          );
+          if(!initialized) {
+            // Do not reset everything on subsequent events
+            ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+            ReactDOM.render(
+              <h2 style={{ textAlign: 'center' }}>Resetting...</h2>,
+              document.getElementById('root')
+            );
+          }
           return;
         }
       }
@@ -108,4 +111,4 @@ const init = () => {
   });
 };
 
-init();
+init(false);
